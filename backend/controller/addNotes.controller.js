@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Notes } from "../models/addNotes.model.js";
+import e from "express";
 
 const addNotesController = async (req, res) => {
   try {   
@@ -143,9 +144,6 @@ const getAllNotesController = async(req,res)=>{
   }
 }
 
-
-
-
 const deleteNoteController = async (req, res) => {
   try {
     const note_id = req.params.id;
@@ -203,4 +201,61 @@ const deleteNoteController = async (req, res) => {
   }
 };
 
-export {addNotesController , editNotes , getAllNotesController , deleteNoteController};
+const isPinnedUpdateController = async (req, res) => {
+  try {
+    const noteId = req.params.id; // Note ID from the request params
+    const { isPinned } = req.body; // Pin status from request body
+    const { id } = req.user; // User ID from the decoded token
+  
+    // Validate the noteId and userId
+    if (!noteId) {
+      return res.status(400).json({
+        success: false,
+        message: "Note id not provided"
+      });
+    }
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "User id not provided"
+      });
+    }
+
+    // Ensure both `noteId` and `userId` are strings when querying
+
+    const note = await Notes.findOne({ 
+      _id: noteId, 
+      userId:  id._id
+    });
+    
+    console.log("Note found:", note);  // Log the found note
+
+    if (!note) {
+      return res.status(404).json({
+        success: false,
+        message: "Note not found for this user"
+      });
+    }
+
+    note.isPinned = isPinned;
+
+    await note.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "isPinned is updated"
+    });
+
+  } catch (error) {
+    console.error("isPinned is not updated", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "isPinned is not updated",
+      error: error.message
+    });
+  }
+}
+
+
+export {addNotesController , editNotes , getAllNotesController , deleteNoteController, isPinnedUpdateController};
