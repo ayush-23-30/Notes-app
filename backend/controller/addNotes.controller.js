@@ -149,8 +149,8 @@ const deleteNoteController = async (req, res) => {
     const note_id = req.params.id;
 
     // Log the note ID and user ID
-    console.log("Note ID:", note_id);
-    console.log("User ID from token:", req.user);
+    // console.log("Note ID:", note_id);
+    // console.log("User ID from token:", req.user);
 
     // Validate the note ID format
     if (!note_id || !mongoose.Types.ObjectId.isValid(note_id)) {
@@ -226,7 +226,7 @@ const isPinnedUpdateController = async (req, res) => {
 
     const note = await Notes.findOne({ 
       _id: noteId, 
-      userId:  id._id
+      userId: id
     });
     
     console.log("Note found:", note);  // Log the found note
