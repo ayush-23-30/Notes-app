@@ -53,14 +53,12 @@ const createAccount = async (req, res) => {
     // Save the user to the database
     await user.save();
 
-
     // Return success response
     return res.status(200).json({
       user,
       success: true,
       message: "User is created (Signed Up).",
     });
-
   } catch (error) {
     console.error("Error creating user:", error);
     return res.status(500).json({
@@ -69,9 +67,8 @@ const createAccount = async (req, res) => {
     });
   }
 };
-// if you send the token in the create Account then you don't need to do login for the user seperately  
+// if you send the token in the create Account then you don't need to do login for the user seperately
 // but i will  send the token when the user is logged in
-
 
 const loginController = async (req, res) => {
   try {
@@ -86,7 +83,7 @@ const loginController = async (req, res) => {
 
     // Find user by email
     let user = await User.findOne({ email });
-    
+
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -96,7 +93,7 @@ const loginController = async (req, res) => {
 
     // Check if the password is correct
     const passwordIsCorrect = await bcrypt.compare(password, user.password);
-    
+
     if (!passwordIsCorrect) {
       return res.status(401).json({
         success: false,
@@ -118,13 +115,13 @@ const loginController = async (req, res) => {
     // Convert user to object and remove sensitive fields
     user = user.toObject();
     delete user.password; // Remove password from user object before sending it
-    user.token = token;   // Add token to user object
+    user.token = token; // Add token to user object
 
     return res.status(200).json({
       success: true,
-      token,  // Send token in the response
+      token, // Send token in the response
       message: "Login successful",
-      user,   // Optionally return user details (without sensitive data)
+      user, // Optionally return user details (without sensitive data)
     });
   } catch (error) {
     console.error("Login failed:", error);
@@ -135,4 +132,31 @@ const loginController = async (req, res) => {
   }
 };
 
-export { createAccount ,loginController};
+const getAllUser = async (req, res) => {
+  try {
+    const { id } = req.user;
+    //  console.log('user:', id); // Check if user is defined
+    const isUser = await User.findOne({ id: id.id });
+    //  console.log('isUser:', isUser);
+    if (!isUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not Fouud",
+      });
+    }
+    return res.json({
+      id: { fullName: isUser.fullName, email: isUser.email, _id: isUser._id },
+      success: true,
+      message: "User founded",
+    });
+  } catch (error) {
+    console.error("there is an error in User found", error.message);
+    return res.status(400).json({
+      error: error.message,
+      success: false,
+      message: "User Controller Not working",
+    });
+  }
+};
+
+export { createAccount, loginController, getAllUser };

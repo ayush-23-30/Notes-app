@@ -10,9 +10,8 @@ const app = express();
 
 app.use(express.json()); 
 app.use(cors({
-    origin : "*", 
-  })
-)
+  origin: "*", // Update this to specific domains in production
+}));
 
 ConnectionWithDb(); 
 
@@ -21,14 +20,11 @@ app.get("/", (req,res)=>{
 }) // this is the way we make api keys to send data.. 
 
 // routing 
-app.use("/api/v1/", router); 
-app.use("/api/v1/", NoteRouter); 
-
+app.use(router); 
+app.use(NoteRouter); 
 
 app.listen(process.env.PORT , ()=>{
   console.log("The server is running Fine");
 })
-
-
 
 // Cors - middleware package for node and express that enables Cross-Origin Resourcess Sharing. it is a secuity feature implemented in web broswer to restict how a web page can interact with different origin(domain , port).. 
