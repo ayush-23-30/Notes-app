@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import PasswordInput from "../components/PasswordInput";
 import { ValidateEmail } from "../utils/helper"; // Assuming this exists in your helper file
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axiosIntance from "../utils/axiosIntance";
 
 function SignUp() {
   const [data, setData] = useState({
@@ -12,11 +13,14 @@ function SignUp() {
     confirmPassword: "",
   });
 
+  const navigate = useNavigate();
+  
   const [error, setError] = useState({
     nameError: null,
     emailError: null,
     passwordError: null,
     confirmPasswordError: null,
+    formError: null, // New global form error field
   });
 
   const changeHandler = (e) => {
@@ -29,13 +33,13 @@ function SignUp() {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-
     // Reset errors before validation
     setError({
       nameError: null,
       emailError: null,
       passwordError: null,
       confirmPasswordError: null,
+      formError: null,
     });
 
     let hasError = false;
@@ -82,18 +86,62 @@ function SignUp() {
     }
 
     // If validation passes, submit the data
-    console.log("Form submitted", data);
+    await signUpApi();
+  };
+
+  const signUpApi = async () => {
+    try {
+      const response = await axiosIntance.post("/sign-up", {
+        fullName: data.name,
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+      });
+   // Debugging line
+      if (response.data && response.data.error) {
+        setError((prevError) => ({
+          ...prevError,
+          formError: response.data.message,
+        }));
+        return;
+      };
+      if (response.data && response.data.accessToken) {
+        localStorage.setItem("token", response.data.accessToken);
+        console.log("User created, navigating to home...");
+        navigate('/');
+      }
+    } catch (error) {
+      console.error("signUp API error:", error);
+      if (error.response && error.response.data && error.response.data.message) {
+        setError((prevError) => ({
+          ...prevError,
+          formError: error.response.data.message,
+        }));
+      } else {
+        setError((prevError) => ({
+          ...prevError,
+          formError: "An unexpected error occurred. Please try again later!",
+        }));
+      }
+    }
   };
 
   return (
     <>
       <Navbar />
       <div className="w-full flex mt-28 justify-center items-center">
-        <div className="flex justify-center pb-3 bg-slate-50 shadow-lg w-72 sm:w-80 md:w-96 relative"> {/* Added relative for absolute positioning */}
+        <div className="flex justify-center pb-3 bg-slate-50 shadow-lg w-72 sm:w-80 md:w-96 relative">
           <form onSubmit={handleSignUp}>
             <h4 className="text-2xl mb-7 text-center mt-2 font-semibold">
               Sign-Up
             </h4>
+
+            {/* Global Form Error */}
+            {error.formError && (
+              <p className="text-red-500 text-center text-sm mb-4">
+                {error.formError}
+              </p>
+            )}
 
             <div className="flex flex-col space-y-4">
               {/* Name Input */}

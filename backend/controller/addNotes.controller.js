@@ -6,7 +6,6 @@ const addNotesController = async (req, res) => {
   try {   
     const { title, content, tags } = req.body;
     const { id } = req.user;
-
     if (!title || !content ) {
       console.log("Missing required fields");
       return res.status(400).json({
@@ -140,7 +139,6 @@ const getAllNotesController = async(req,res)=>{
       error : error.message,
       message : "We are failed to get All notes "
     })
-    
   }
 }
 

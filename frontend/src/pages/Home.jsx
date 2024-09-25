@@ -25,23 +25,23 @@ function Home() {
   }
 
   const [userInfo , setUserInfo] = useState(null); 
-   const navigate = useNavigate(); 
+   const navigate = useNavigate();
 
    // get user info from backend; 
-  const getUserInfo = async ()=>{
+   const getUserInfo = async () => {
     try {
-      const response = await axiosIntance.get("/get-user")
-      if(response.data && response.data.id){ // you can try id instead of user 
-        setUserInfo(response.data.id); 
+      const response = await axiosIntance.get("/get-user");
+      if (response.data && response.data.user) { // Change here
+        setUserInfo(response.data.user); // Change here
       }
     } catch (error) {
-      if(error.response.status === 400) {
-        localStorage.clear(); 
-        navigate("/login"); 
+      if (error.response && error.response.status === 400) {
+        localStorage.clear();
+        navigate("/login");
       }
     }
-  }
-
+  };
+  
   useEffect(()=>{
     getUserInfo(); 
     return () =>{}

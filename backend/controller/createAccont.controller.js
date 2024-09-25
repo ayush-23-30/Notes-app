@@ -9,14 +9,13 @@ const createAccount = async (req, res) => {
   try {
     const { fullName, email, password, confirmPassword } = req.body;
 
-    if (!fullName && !email && !password && !confirmPassword) {
+    if (!fullName || !email || !password || !confirmPassword) {
       return res.status(400).json({
         success: false,
         message: "All fields are required! Check once again.",
       });
     }
 
-    // Check if the user already exists
     const isUserExisted = await User.findOne({ email });
     if (isUserExisted) {
       return res.status(400).json({
@@ -24,7 +23,7 @@ const createAccount = async (req, res) => {
         message: "The user already exists.",
       });
     }
-    // Check if passwords match
+
     if (password !== confirmPassword) {
       return res.status(400).json({
         success: false,
@@ -32,7 +31,6 @@ const createAccount = async (req, res) => {
       });
     }
 
-    // Hash the password
     let hashedPassword;
     try {
       hashedPassword = await bcrypt.hash(password, 10);
@@ -43,18 +41,22 @@ const createAccount = async (req, res) => {
       });
     }
 
-    // Create the new user
     const user = new User({
       fullName,
       email,
       password: hashedPassword,
     });
 
-    // Save the user to the database
     await user.save();
 
-    // Return success response
+    // Generate the access token
+    const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_TOKEN,{
+      expiresIn: "72h", // You can adjust the expiry time
+    });
+
+    // Return success response along with the token
     return res.status(200).json({
+      accessToken, // Include the token in the response
       user,
       success: true,
       message: "User is created (Signed Up).",
@@ -67,6 +69,7 @@ const createAccount = async (req, res) => {
     });
   }
 };
+
 // if you send the token in the create Account then you don't need to do login for the user seperately
 // but i will  send the token when the user is logged in
 
@@ -132,31 +135,40 @@ const loginController = async (req, res) => {
   }
 };
 
-const getAllUser = async (req, res) => {
+const getUser = async (req, res) => {
   try {
+    // Assuming req.user contains the decoded token
     const { id } = req.user;
-    //  console.log('user:', id); // Check if user is defined
-    const isUser = await User.findOne({ id: id.id });
-    //  console.log('isUser:', isUser);
-    if (!isUser) {
+    console.log('User from token:', req.user);
+
+    // Fetch user by their ID
+    const user = await User.findById(id);
+
+    // Check if user was found
+    if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not Fouud",
+        message: "User not found",
       });
     }
+
     return res.json({
-      id: { fullName: isUser.fullName, email: isUser.email, _id: isUser._id },
+      user: {
+        fullName: user.fullName,
+        email: user.email,
+        _id: user._id,
+      },
       success: true,
-      message: "User founded",
+      message: "User found",
     });
   } catch (error) {
-    console.error("there is an error in User found", error.message);
-    return res.status(400).json({
+    console.error("Error finding user:", error.message);
+    return res.status(500).json({
       error: error.message,
       success: false,
-      message: "User Controller Not working",
+      message: "Error retrieving user",
     });
   }
 };
 
-export { createAccount, loginController, getAllUser };
+export { createAccount, loginController, getUser };
