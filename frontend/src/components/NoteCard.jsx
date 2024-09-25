@@ -20,10 +20,13 @@ function NoteCard({
           <h6 className="text-sm font-medium">{title}</h6>
           <span className="text-xs text-slate-500">{date}</span>
         </div>
+        <div className="flex justify-end">
         <TbPinnedFilled
-          className={`btn-icon ${isPinned ? "text-primary" : "text-slate-500"}`}
+          className={`btn-icon  ${isPinned ? "text-primary" : "text-slate-500"}`}
           onClick={onPinNote}
         />
+
+        </div>
         <p className="text-xs text-slate-600 mt-2">
           {content.slice(0, 60)}...
         </p>

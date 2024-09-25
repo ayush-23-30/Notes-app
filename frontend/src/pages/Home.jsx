@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import NoteCard from "../components/NoteCard";
 import { MdAdd } from "react-icons/md";
 import AddEditNotes from "./AddEditNotes";
 import Modal from "react-modal";
+import { useNavigate } from "react-router-dom";
+import axiosIntance from "../utils/axiosIntance";
 
 function Home() {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -22,9 +24,31 @@ function Home() {
     setOpenAddEditModal({...openAddEditModal, isShown : false})
   }
 
+  const [userInfo , setUserInfo] = useState(null); 
+   const navigate = useNavigate(); 
+
+   // get user info from backend; 
+  const getUserInfo = async ()=>{
+    try {
+      const response = await axiosIntance.get("/get-user")
+      if(response.data && response.data.id){ // you can try id instead of user 
+        setUserInfo(response.data.id); 
+      }
+    } catch (error) {
+      if(error.response.status === 400) {
+        localStorage.clear(); 
+        navigate("/login"); 
+      }
+    }
+  }
+
+  useEffect(()=>{
+    getUserInfo(); 
+    return () =>{}
+  },[]); 
   return (
     <>
-      <Navbar />
+      <Navbar userInfo={userInfo} />
       <div className="container mt-6 ">
         <div className="  items-center justify-center flex md:gap-5 gap-3 flex-wrap">
           <NoteCard
