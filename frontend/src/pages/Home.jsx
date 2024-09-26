@@ -1,3 +1,4 @@
+// Home component
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import NoteCard from "../components/NoteCard";
@@ -6,33 +7,64 @@ import AddEditNotes from "./AddEditNotes";
 import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 import axiosIntance from "../utils/axiosIntance";
+import moment from "moment";
+
 
 function Home() {
   const [showTooltip, setShowTooltip] = useState(false);
-  const onEdit = () => {};
-  const onDelete = () => {};
-  const onPinNote = () => {};
-
-  // this state controls the modal structure 
   const [openAddEditModal, setOpenAddEditModal] = useState({
-    isShown: false, 
+    isShown: false,
     type: "add",
     data: null,
   });
+  const [AllNotes, setAllNotes] = useState([]);
+  const [userInfo, setUserInfo] = useState(null);
+  const navigate = useNavigate();
 
-  const closeModel = ()=>{
-    setOpenAddEditModal({...openAddEditModal, isShown : false})
+  const [showToastMsg , setShowToastMsg] = useState({
+    isShown : false, 
+    message : "", 
+    type : "add"
+  })
+
+  const showToastMessage = (message,type)=>{
+    setShowToastMsg({
+      isShown : true, 
+      message : message, 
+      type : type
+    })
+  }
+  const handleCloseToast = ()=>{
+    setShowToastMsg({
+      isShown : false, 
+      message : "", 
+    })
   }
 
-  const [userInfo , setUserInfo] = useState(null); 
-   const navigate = useNavigate();
+  const closeModel = () => {
+    setOpenAddEditModal({
+      ...openAddEditModal,
+      isShown: false, // Ensure modal is hidden
+      data: null,     // Reset the note data in modal
+      type: "add",    // Reset type to "add" after update
+    });
+  };
+  
+  const handleEdit = (noteDetails) => {
+    // console.log("Editing note:", noteDetails);
+    setOpenAddEditModal({
+      isShown: true,
+      data: noteDetails, // Set the selected note data for editing
+      type: "edit",
+    });
+  };
+  
 
-   // get user info from backend; 
-   const getUserInfo = async () => {
+  const getUserInfo = async () => {
     try {
       const response = await axiosIntance.get("/get-user");
-      if (response.data && response.data.user) { // Change here
-        setUserInfo(response.data.user); // Change here
+      if (response.data && response.data.user) {
+        setUserInfo(response.data.user);
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -41,31 +73,46 @@ function Home() {
       }
     }
   };
-  
-  useEffect(()=>{
-    getUserInfo(); 
-    return () =>{}
-  },[]); 
+
+  const getAllNotes = async () => {
+    try {
+      const response = await axiosIntance.get("/getNotes");
+      if (response.data && response.data.getNote) {
+        setAllNotes(response.data.getNote);
+      }
+    } catch (error) {
+      console.log("An unexpected error occurred, please check again");
+    }
+  };
+
+  useEffect(() => {
+    getAllNotes();
+    getUserInfo();
+  }, []);
+
   return (
     <>
       <Navbar userInfo={userInfo} />
       <div className="container mt-6 ">
-        <div className="  items-center justify-center flex md:gap-5 gap-3 flex-wrap">
-          <NoteCard
-            title={"Meeting on 16th september"}
-            date="12-sept-2024"
-            content="You have a meeting on 16th september with The CEO of TCS. "
-            tags="#Meeting"
-            isPinned={true}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            onPinNote={onPinNote}
-          />
+        <div className="items-center justify-center flex md:gap-5 gap-3 flex-wrap">
+          {AllNotes.map((items) => (
+            <NoteCard
+              key={items._id}
+              title={items.title}
+              date={moment(items.createdAt).format("Do MMM YYYY")}
+              content={items.content}
+              tags={items.tags}
+              isPinned={items.isPinned}
+              onEdit={() => handleEdit(items)}
+              onDelete={() => {}}
+              onPinNote={() => {}}
+            />
+          ))}
         </div>
       </div>
 
       <div
-        className="fixed right-8 bottom-8" // Make the container fixed as well
+        className="fixed right-8 bottom-8"
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
       >
@@ -73,10 +120,9 @@ function Home() {
           className="w-12 h-12 flex items-center justify-center rounded-full bg-primary hover:bg-blue-600 shadow-lg"
           onClick={() => {
             setOpenAddEditModal({ isShown: true, type: "add", data: null });
-            // when i click on this the model properties change to showm : true, type : text 
           }}
         >
-          <MdAdd className="text-4xl text-white"/>
+          <MdAdd className="text-4xl text-white" />
         </button>
 
         {showTooltip && (
@@ -85,25 +131,23 @@ function Home() {
           </span>
         )}
       </div>
-     
+
       <Modal
         isOpen={openAddEditModal.isShown}
-        onRequestClose= {closeModel}
+        onRequestClose={closeModel}
         style={{
           overlay: {
             backgroundColor: "rgba(0,0,0,0.2)",
           },
         }}
-        contentLabel=""
-        className=" md:w-[65vw] w-[85vw]  max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-scrll  relative top-12 "
+        className=" md:w-[65vw] w-[85vw] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-scroll relative top-12"
       >
-        <AddEditNotes 
-        type={openAddEditModal.type}
-        noteData={openAddEditModal.data}
-        onClose={()=> {
-          setOpenAddEditModal( { isShown : false , type : "add" , data : null} )
-        }
-        }/>
+        <AddEditNotes
+          type={openAddEditModal.type}
+          noteData={openAddEditModal.data}
+          onClose={closeModel}
+          getAllNotes={getAllNotes}
+        />
       </Modal>
 
     </>
@@ -111,7 +155,6 @@ function Home() {
 }
 
 export default Home;
-
 // react model is a third party library for react.. 
 // this is use to handle models in react to make our work easy and we don't do need to make them from scratches 
 // model means :- it refers to a popup or a dialog box 

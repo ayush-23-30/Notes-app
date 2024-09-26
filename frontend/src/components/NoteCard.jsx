@@ -21,26 +21,33 @@ function NoteCard({
           <span className="text-xs text-slate-500">{date}</span>
         </div>
         <div className="flex justify-end">
-        <TbPinnedFilled
-          className={`btn-icon  ${isPinned ? "text-primary" : "text-slate-500"}`}
-          onClick={onPinNote}
-        />
-
+          <TbPinnedFilled
+            className={`btn-icon  ${
+              isPinned ? "text-primary" : "text-slate-500"
+            }`}
+            onClick={onPinNote}
+          />
         </div>
-        <p className="text-xs text-slate-600 mt-2">
-          {content.slice(0, 60)}...
-        </p>
+        <p className="text-xs text-slate-600 mt-2">{content.slice(0, 60)}...</p>
         <div className="flex items-center justify-between mt-2">
-          <div className="text-xs text-slate-500">{tags}</div>
+<div className="text-xs   text-slate-900">
+  <p>
+   {tags.map((item)=> ` #${item}` )}
+
+  </p>
+    </div>
           <div className="flex items-center justify-end gap-2">
-            <MdCreate onClick={onEdit}
-            className="hover:text-green-400 btn-icon" />
-            <MdDelete onClick={onDelete} className="hover:text-red-500 btn-icon" />
+            <MdCreate
+              onClick={onEdit}
+              className="hover:text-green-400 btn-icon"
+            />
+            <MdDelete
+              onClick={onDelete}
+              className="hover:text-red-500 btn-icon"
+            />
           </div>
         </div>
       </div>
-      
-  
     </>
   );
 }
