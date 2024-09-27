@@ -69,8 +69,8 @@ function Login() {
   return (
     <>
       <Navbar />
-      <div className="w-full flex mt-28 justify-center items-center">
-        <div className="flex justify-center bg-slate-50 shadow-lg w-72 sm:w-80 md:w-96">
+      <div className="w-full flex justify-center items-center newbg">
+        <div className="flex justify-center TopNav rounded-lg bg-slate-50 shadow-lg w-[300px] sm:w-80 md:w-96">
           <form onSubmit={handleLogin}>
             <h4 className="text-2xl mb-7 text-center mt-2 font-semibold">Login</h4>
             <div className="flex flex-col">
@@ -80,12 +80,13 @@ function Login() {
                 name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="input-box"
+                className="input-box text-white placeholder:text-white"
               />
               {emailError && <p className="text-red-500 text-xs pb-1">{emailError}</p>}
               
               <PasswordInput 
                 value={password} 
+                className = "placeholder:text-white"
                 onChange={(e) => setPassword(e.target.value)} 
               />
               {passwordError && <p className="text-red-500 text-xs pb-1">{passwordError}</p>}
@@ -96,12 +97,12 @@ function Login() {
             </div>
 
             <p className="text-sm text-center mb-3 mt-4">
-              Not registered yet?
+              Not registered yet? 
               <Link
                 to="/signup"
-                className="cursor-pointer underline font-medium text-primary"
+                className="cursor-pointer underline pl-[4px] font-medium text-slate-200"
               >
-                Create an Account
+                 Create an Account
               </Link>
             </p>
           </form>

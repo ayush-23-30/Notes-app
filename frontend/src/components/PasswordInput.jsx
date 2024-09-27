@@ -16,12 +16,12 @@ function PasswordInput({ name,  value, onChange, placeholder }) {
         placeholder={placeholder || "Password"}
         onChange={onChange}
         name = {name}
-        className="w-full text-sm bg-transparent py-3 mr-3 outline-none rounded"
+        className="w-full text-sm bg-transparent placeholder:text-white py-3 mr-3 outline-none rounded"
       />
      { isShowPassword ? (<FaRegEye size={20} 
-      className="text-primary cursor-pointer "
+      className="text-white cursor-pointer "
       onClick={ toggleShowPassword} /> ): (<FaEyeSlash size={20} 
-        className=" text-slate-400  cursor-pointer "
+        className=" text-slate-200  cursor-pointer "
         onClick={ toggleShowPassword} />)}
     </div>
   );

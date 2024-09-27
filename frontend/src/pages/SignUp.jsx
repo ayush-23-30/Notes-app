@@ -129,8 +129,8 @@ function SignUp() {
   return (
     <>
       <Navbar />
-      <div className="w-full flex mt-28 justify-center items-center">
-        <div className="flex justify-center pb-3 bg-slate-50 shadow-lg w-72 sm:w-80 md:w-96 relative">
+      <div className="w-full flex justify-center newbg items-center">
+        <div className="flex justify-center pb-3 TopNav bg-slate-50 shadow-lg w-72 sm:w-80 md:w-96 relative">
           <form onSubmit={handleSignUp}>
             <h4 className="text-2xl mb-7 text-center mt-2 font-semibold">
               Sign-Up
@@ -152,7 +152,7 @@ function SignUp() {
                   name="name"
                   value={data.name}
                   onChange={changeHandler}
-                  className="input-box md:w-[300px] border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:border-blue-300"
+                  className="input-box placeholder:text-white md:w-[300px] rounded-md p-2 focus:outline-none focus:ring focus:border-blue-300"
                 />
                 {error.nameError && (
                   <p className="absolute text-red-500 text-xs mt-1 left-0 -bottom-4">
@@ -169,7 +169,7 @@ function SignUp() {
                   name="email"
                   value={data.email}
                   onChange={changeHandler}
-                  className="input-box w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:border-blue-300"
+                  className="input-box w-full placeholder:text-white  rounded-md p-2 focus:outline-none focus:ring focus:border-blue-300"
                 />
                 {error.emailError && (
                   <p className="absolute text-red-500 text-xs mt-1 left-0 -bottom-4">
@@ -219,7 +219,7 @@ function SignUp() {
                 Already have an account?
                 <Link
                   to="/login"
-                  className="cursor-pointer pl-1 underline font-medium text-primary"
+                  className="cursor-pointer text-white pl-1 underline font-medium "
                 >
                   Login
                 </Link>

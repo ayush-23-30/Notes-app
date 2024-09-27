@@ -145,7 +145,6 @@ const getAllNotesController = async(req,res)=>{
 const deleteNoteController = async (req, res) => {
   try {
     const note_id = req.params.id;
-
     // Log the note ID and user ID
     // console.log("Note ID:", note_id);
     // console.log("User ID from token:", req.user);
@@ -255,5 +254,39 @@ const isPinnedUpdateController = async (req, res) => {
   }
 }
 
+const SearchController = async(req,res)=>{
+try{
+  const {id} = req.user; 
+  const {query } = req.query; 
+  if(!query) {
+    return res.status(300).json({
+      success : false, 
+    message : "The query is not found"
+    })
+  }
 
-export {addNotesController , editNotes , getAllNotesController , deleteNoteController, isPinnedUpdateController};
+  const matchingNotes = await Notes.find({
+    userId : id, 
+    $or: [
+     { title : { $regex : new RegExp(query, "i") }},
+     {content : { $regex : new RegExp(query, "i") } }
+    ]
+  })
+
+  return res.status(200).json({
+    success : true, 
+    message : "search find",
+    matchingNotes
+  })
+
+}catch(error){
+console.log("there is an error in serach ", error.message);
+res.status(404).json({
+  success : false, 
+  message : 'Search controller is not correct',
+  error : error.message
+})}
+}
+
+
+export {addNotesController , editNotes , getAllNotesController , deleteNoteController, isPinnedUpdateController , SearchController};

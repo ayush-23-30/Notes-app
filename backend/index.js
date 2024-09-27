@@ -22,6 +22,7 @@ app.get("/", (req,res)=>{
 // routing 
 app.use(router); 
 app.use(NoteRouter); 
+
 // app.use("/api/v1/",router); 
 // app.use("/api/v1/",NoteRouter); 
 

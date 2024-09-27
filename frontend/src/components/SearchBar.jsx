@@ -5,20 +5,20 @@ import { IoMdCloseCircle } from "react-icons/io";
 function SearchBar({value , name , onChange , handleSearch , onClearSearch}) {
   return (
   <>
-  <div className="w-80 flex mx-2 items-center px-4 bg-slate-100 rounded-md ">
+   <div className="w-80 flex mx-2  bg-gradient-to-r from-cyan-500 justify-between to-blue-200 items-center px-4 rounded-md ">
     <input type="text" 
     placeholder='Search Notes'
-    className='md:w-full w-[80%] text-sm bg-transparent py-[11px] outline-none  '
+    className='md:w-full w-[80%] placeholder:text-white text-sm bg-transparent py-[11px] outline-none  '
     onChange={onChange}
     value={value}
     name={name}
      />
 
-     { value &&  <IoMdCloseCircle className = "text-xl text-slate-500 cursor-pointer mr-3  hover:text-black " onClick={onClearSearch}/>}
+    
+     { value &&  <IoMdCloseCircle className = "text-xl text-slate-200 cursor-pointer   hover:text-black " onClick={onClearSearch}/>}
 
-    {<FaMagnifyingGlass className='text-slate-400 hover:text-black relative  left-3 ' onClick={handleSearch} />}
-
-  </div>
+    {<FaMagnifyingGlass className='text-slate-700 hover:text-black relative sm:left-2 md:left-4 ' onClick={handleSearch} />} 
+    </div>
   </>
   )
 }

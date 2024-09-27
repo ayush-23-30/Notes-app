@@ -8,6 +8,8 @@ import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 import axiosIntance from "../utils/axiosIntance";
 import moment from "moment";
+import { toast } from "react-toastify";
+
 
 
 function Home() {
@@ -21,25 +23,8 @@ function Home() {
   const [userInfo, setUserInfo] = useState(null);
   const navigate = useNavigate();
 
-  const [showToastMsg , setShowToastMsg] = useState({
-    isShown : false, 
-    message : "", 
-    type : "add"
-  })
+  const [isSerach , setIsSearch] = useState(false)
 
-  const showToastMessage = (message,type)=>{
-    setShowToastMsg({
-      isShown : true, 
-      message : message, 
-      type : type
-    })
-  }
-  const handleCloseToast = ()=>{
-    setShowToastMsg({
-      isShown : false, 
-      message : "", 
-    })
-  }
 
   const closeModel = () => {
     setOpenAddEditModal({
@@ -85,6 +70,42 @@ function Home() {
     }
   };
 
+  const deleteNote = async (data) => {
+    const noteID = data._id;
+
+    try {
+      const response = await axiosIntance.delete(`/note-delete/${noteID}`); // Ensure /api is added if your routes are prefixed
+      if (response.data && response.data.message) {
+        toast.error("Note is deleted");
+        getAllNotes(); // Refresh notes after deletion
+      }
+    } catch (error) {
+      console.error("Error deleting note:", error); // Log full error
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        console.log("Unexpected error in Delete API:", error.response.data.message);
+      }
+    }
+  };
+  
+  const SearchNote = async (query)=> {
+   try {
+     const response = await axiosIntance.get("/search-note", {params : query})
+ 
+     if(response.data && response.data.matchingNotes){
+       setIsSearch(true);
+       setAllNotes(response.data.matchingNotes)
+     }
+   } catch (error) {
+    console.log("there is an unexpected error",error.message);
+
+    
+   }
+  }
+
   useEffect(() => {
     getAllNotes();
     getUserInfo();
@@ -92,11 +113,12 @@ function Home() {
 
   return (
     <>
-      <Navbar userInfo={userInfo} />
-      <div className="container mt-6 ">
-        <div className="items-center justify-center flex md:gap-5 gap-3 flex-wrap">
+      <Navbar userInfo={userInfo} SearchNote = {SearchNote}/>
+      <div className="container newbg ">
+
+    {  AllNotes.length > 0 ? ( <div className="items-center justify-center flex md:gap-5 gap-3 flex-wrap">
           {AllNotes.map((items) => (
-            <NoteCard
+            <NoteCard 
               key={items._id}
               title={items.title}
               date={moment(items.createdAt).format("Do MMM YYYY")}
@@ -104,11 +126,17 @@ function Home() {
               tags={items.tags}
               isPinned={items.isPinned}
               onEdit={() => handleEdit(items)}
-              onDelete={() => {}}
+              onDelete={ ()=> deleteNote(items)}
               onPinNote={() => {}}
             />
           ))}
-        </div>
+        </div>) :(<div 
+  className="h-[80vh] flex items-center justify-center flex-col text-2xl font-semibold gap-2 w-full"
+>
+  <h2 className="text-center">There is No Note Created!</h2>
+  <p>Please Create a Note</p>
+</div>
+ )}
       </div>
 
       <div

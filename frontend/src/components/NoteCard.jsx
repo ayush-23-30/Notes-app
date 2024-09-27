@@ -15,27 +15,24 @@ function NoteCard({
 }) {
   return (
     <>
-      <div className="border rounded w-[90vw] mb-4 sm:w-[70%] md:w-[30vw] p-4 bg-white hover:shadow-xl transition-all ease-out">
+      <div className=" rounded w-[90vw] mt-4  sm:w-[70%] md:w-[30vw] p-4 bg-white hover:shadow-xl transition-all ease-out bg-gradient-to-r from-cyan-500 to-blue-500">
         <div className="flex items-center justify-between">
-          <h6 className="text-sm font-medium">{title}</h6>
-          <span className="text-xs text-slate-500">{date}</span>
+          <h6 className="text-sm font-medium  capitalize">{title}</h6>
+          <span className="text-xs text-slate-100">{date}</span>
         </div>
         <div className="flex justify-end">
           <TbPinnedFilled
-            className={`btn-icon  ${
-              isPinned ? "text-primary" : "text-slate-500"
+            className={`btn-icon hover:text-[#001f3f]  ${
+              isPinned ? "text-yellow-600" : "text-slate-100"
             }`}
             onClick={onPinNote}
           />
         </div>
-        <p className="text-xs text-slate-600 mt-2">{content.slice(0, 60)}...</p>
+        <p className="text-sm text-slate-100 mt-2">{content.slice(0, 60)}</p>
         <div className="flex items-center justify-between mt-2">
-<div className="text-xs   text-slate-900">
-  <p>
-   {tags.map((item)=> ` #${item}` )}
-
-  </p>
-    </div>
+          <div className="text-xs  text-slate-900">
+            <p>{tags.map((item) => ` #${item}`)}</p>
+          </div>
           <div className="flex items-center justify-end gap-2">
             <MdCreate
               onClick={onEdit}
