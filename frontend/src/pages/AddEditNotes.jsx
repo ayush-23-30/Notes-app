@@ -6,7 +6,7 @@ import axiosIntance from "../utils/axiosIntance";
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from "react-toastify";
 
-function AddEditNotes({ noteData, type, getAllNotes, onClose }) {
+function AddEditNotes({ noteData, type, getAllNotes, onClose , updateLocalNote }) {
   const [title, setTitle] = useState(noteData?.title || "");
   const [content, setContent] = useState(noteData?.content || "");
   const [tags, setTags] = useState(noteData?.tags || []);
@@ -46,10 +46,10 @@ function AddEditNotes({ noteData, type, getAllNotes, onClose }) {
         content,
         tags,
       });
-      if (response.data && response.data.note) {
-        getAllNotes(); // Update the notes list
+      if (response.data && response.data.editSaved) {
+        updateLocalNote(response.data.editSaved); // Update the local notes list with the edited note
         onClose(); // Close the modal after the note is updated
-        toast.success("Note Edited")
+      
       }
     } catch (error) {
       if (

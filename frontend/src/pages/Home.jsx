@@ -25,6 +25,14 @@ function Home() {
 
   const [isSerach , setIsSearch] = useState(false)
 
+  const updateLocalNote = (updatedNote) => {
+    setAllNotes((prevNotes) => 
+      prevNotes.map((note) => 
+        note._id === updatedNote._id ? updatedNote : note // Replace edited note
+      )
+    );
+  };
+
 
   const closeModel = () => {
     setOpenAddEditModal({
@@ -93,7 +101,7 @@ function Home() {
   
   const SearchNote = async (query)=> {
    try {
-     const response = await axiosIntance.get("/search-note", {params : query})
+     const response = await axiosIntance.get("/search-note", {params : {query} })
  
      if(response.data && response.data.matchingNotes){
        setIsSearch(true);
@@ -101,10 +109,35 @@ function Home() {
      }
    } catch (error) {
     console.log("there is an unexpected error",error.message);
-
-    
    }
   }
+
+  const updateIsPinned = async (note) => {
+    const noteID = note._id; // Get the note's ID from the passed note object
+    const newIsPinnedValue = !note.isPinned; // Toggle the pinned state locally
+  
+    try {
+      // Make the PUT request to update the pin status on the backend
+      const response = await axiosIntance.put(`/isPinned/${noteID}`, {
+        isPinned: newIsPinnedValue, // Send the new value to backend
+      });
+  
+      if (response.data && response.data.success) {
+        // Refresh notes or update the UI to reflect the new state
+        getAllNotes(); // This will fetch the latest notes and update the UI
+        toast.info(newIsPinnedValue ? "Note Pinned" : "Note Unpinned"); // Show the correct message
+      }
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        setError(error.response.data.message); // Display the error message
+      }
+    }
+  };
+  
 
   useEffect(() => {
     getAllNotes();
@@ -113,7 +146,7 @@ function Home() {
 
   return (
     <>
-      <Navbar userInfo={userInfo} SearchNote = {SearchNote}/>
+      <Navbar userInfo={userInfo} SearchNote = {SearchNote} getAllNotes = {getAllNotes}/>
       <div className="container newbg ">
 
     {  AllNotes.length > 0 ? ( <div className="items-center justify-center flex md:gap-5 gap-3 flex-wrap">
@@ -127,7 +160,7 @@ function Home() {
               isPinned={items.isPinned}
               onEdit={() => handleEdit(items)}
               onDelete={ ()=> deleteNote(items)}
-              onPinNote={() => {}}
+              onPinNote={() => updateIsPinned(items)}
             />
           ))}
         </div>) :(<div 
@@ -175,6 +208,7 @@ function Home() {
           noteData={openAddEditModal.data}
           onClose={closeModel}
           getAllNotes={getAllNotes}
+          updateLocalNote = {updateLocalNote}
         />
       </Modal>
 

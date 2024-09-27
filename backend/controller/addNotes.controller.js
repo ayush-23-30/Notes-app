@@ -254,39 +254,50 @@ const isPinnedUpdateController = async (req, res) => {
   }
 }
 
-const SearchController = async(req,res)=>{
-try{
-  const {id} = req.user; 
-  const {query } = req.query; 
-  if(!query) {
-    return res.status(300).json({
-      success : false, 
-    message : "The query is not found"
-    })
+const SearchController = async (req, res) => {
+  try {
+    const { id } = req.user; // Get user ID from request
+    const { query } = req.query; // Get query from request query params
+
+    if (!query) {
+      return res.status(400).json({
+        success: false,
+        message: "No query provided",
+      });
+    }
+
+    // Search for notes belonging to the user that match the title or content
+    const matchingNotes = await Notes.find({
+      userId: id, // Filter by user's notes
+      $or: [
+        { title: { $regex: new RegExp(query, "i") } }, // Case-insensitive search
+        { content: { $regex: new RegExp(query, "i") } }, // Case-insensitive search
+      ],
+    });
+
+    if (!matchingNotes.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No matching notes found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Notes found",
+      matchingNotes,
+    });
+
+  } catch (error) {
+    console.log("There is an error in search", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred during search",
+      error: error.message,
+    });
   }
+};
 
-  const matchingNotes = await Notes.find({
-    userId : id, 
-    $or: [
-     { title : { $regex : new RegExp(query, "i") }},
-     {content : { $regex : new RegExp(query, "i") } }
-    ]
-  })
-
-  return res.status(200).json({
-    success : true, 
-    message : "search find",
-    matchingNotes
-  })
-
-}catch(error){
-console.log("there is an error in serach ", error.message);
-res.status(404).json({
-  success : false, 
-  message : 'Search controller is not correct',
-  error : error.message
-})}
-}
 
 
 export {addNotesController , editNotes , getAllNotesController , deleteNoteController, isPinnedUpdateController , SearchController};

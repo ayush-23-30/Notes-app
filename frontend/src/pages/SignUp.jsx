@@ -107,8 +107,8 @@ function SignUp() {
       };
       if (response.data && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
-        console.log("User created, navigating to home...");
-        navigate('/');
+       
+        navigate('/login');
       }
     } catch (error) {
       console.error("signUp API error:", error);
