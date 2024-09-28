@@ -4,6 +4,7 @@ import PasswordInput from "../components/PasswordInput";
 import { ValidateEmail } from "../utils/helper"; // Assuming this exists in your helper file
 import { Link, useNavigate } from "react-router-dom";
 import axiosIntance from "../utils/axiosIntance";
+import { toast } from "react-toastify";
 
 function SignUp() {
   const [data, setData] = useState({
@@ -107,8 +108,9 @@ function SignUp() {
       };
       if (response.data && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
-       
+        toast.success("Sign Up Successful")
         navigate('/login');
+        
       }
     } catch (error) {
       console.error("signUp API error:", error);
@@ -122,6 +124,7 @@ function SignUp() {
           ...prevError,
           formError: "An unexpected error occurred. Please try again later!",
         }));
+        toast.reject("Sign Up Failed ")
       }
     }
   };

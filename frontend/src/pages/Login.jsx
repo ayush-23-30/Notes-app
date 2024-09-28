@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import PasswordInput from "../components/PasswordInput";
 import { ValidateEmail } from "../utils/helper";
 import axiosIntance from "../utils/axiosIntance";
+import { toast } from "react-toastify";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -45,10 +46,12 @@ function Login() {
       });
       if (response.data && response.data.token) {
         localStorage.setItem("token", response.data.token);
+        toast.success("Login Successful")
         navigate('/'); // Redirect to home
       }
    } catch (error) {
     console.error("Login API error:", error);
+    toast.reject("login failed")
     
     if (error.response) {
       // Server responded with a status other than 2xx
