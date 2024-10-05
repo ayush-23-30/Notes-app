@@ -47,7 +47,7 @@ function Login() {
       if (response.data && response.data.token) {
         localStorage.setItem("token", response.data.token);
         toast.success("Login Successful")
-        navigate('/'); // Redirect to home
+        navigate('/home'); // Redirect to home
       }
    } catch (error) {
     console.error("Login API error:", error);

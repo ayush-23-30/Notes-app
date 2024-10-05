@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { BASE_URL } from './constants';
 
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 const axiosIntance = axios.create({
   baseURL: BASE_URL,  // Base URL for all requests
   timeout: 5000,      // Timeout for requests (5 seconds)
