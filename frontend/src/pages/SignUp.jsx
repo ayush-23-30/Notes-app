@@ -221,7 +221,7 @@ function SignUp() {
               <p className="text-sm text-center mt-4">
                 Already have an account?
                 <Link
-                  to="/login"
+                  to="/"
                   className="cursor-pointer text-white pl-1 underline font-medium "
                 >
                   Login
