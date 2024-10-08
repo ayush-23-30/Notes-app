@@ -22,7 +22,7 @@ function Navbar({userInfo , SearchNote ,getAllNotes }) {
 
   const onLogout = () => {
     localStorage.clear()
-    navigate("/login");
+    navigate("/");
   };
 
   return (

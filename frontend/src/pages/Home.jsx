@@ -62,7 +62,7 @@ function Home() {
     } catch (error) {
       if (error.response && error.response.status === 400) {
         localStorage.clear();
-        navigate("/login");
+        navigate("/");
       }
     }
   };
