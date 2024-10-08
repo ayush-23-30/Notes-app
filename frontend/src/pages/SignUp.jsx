@@ -109,7 +109,7 @@ function SignUp() {
       if (response.data && response.data.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
         toast.success("Sign Up Successful")
-        navigate('/login');
+        navigate('/');
         
       }
     } catch (error) {

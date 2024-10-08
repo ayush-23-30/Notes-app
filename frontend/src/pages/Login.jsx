@@ -51,7 +51,7 @@ function Login() {
       }
    } catch (error) {
     console.error("Login API error:", error);
-    toast.reject("login failed")
+    toast.warning("login failed")
     
     if (error.response) {
       // Server responded with a status other than 2xx
